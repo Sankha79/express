@@ -5,7 +5,7 @@ const app = express()
 const port = process.env.PORT || 3000
 
 
-// <- -- when we send the data according to client request -- ->
+// <- -- when we send data to the client according to request url -- ->
 
 app.get("/", (req, res) => {
     res.send("Hello Express!")
@@ -20,15 +20,17 @@ app.get("/twitter", (req, res) => {
 })
 
 
+// middleware
+// any data that comes up in json format, we except that
 app.use(express.json())
 
 let teaData = []
 let nextId = 1
 
-// add a new tea
-app.post('/teas', (req, res) => {
 
-    const {name, price} = req.body
+// save the data in database
+app.post('/teas', (req, res) => {
+    const {name, price} = req.body  // destructuring the body for extract the data
     const newTea = {id: nextId++, name, price}
     teaData.push(newTea)
     res.status(201).send(newTea)
@@ -41,7 +43,7 @@ app.get('/teas', (req, res) => {
 
 // get a tea with id
 app.get('/teas/:id', (req, res) => {
-    const tea = teaData.find(t => t.id === parseInt(req.params.id))
+    const tea = teaData.find(t => t.id === parseInt(req.params.id))  // in the find method it goes back to every single entity of the array
     if (!tea) {
         return res.status(404).send('Tea not found')
     }
@@ -68,7 +70,7 @@ app.delete('/teas/:id', (req, res) => {
         return res.status(404).send('tea not found')
     }
     teaData.splice(index, 1)
-    return res.status(204).send('deleted')
+    return res.status(200).send('deleted')
 })
 
 app.listen(port, () => {
